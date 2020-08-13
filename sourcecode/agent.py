@@ -11,7 +11,7 @@ import torch.optim as optim
 
 BUFFER_SIZE = 500000    #int(1e4)  # replay buffer size
 BATCH_SIZE = 256        #128        # minibatch size
-GAMMA = 0.997            # discount factor
+GAMMA = 0.996            # discount factor
 TAU = 0.001              # for soft update of target parameters
 LR_ACTOR = 0.0002         # learning rate of the actor 
 LR_CRITIC = 1e-3        # learning rate of the critic
@@ -34,7 +34,6 @@ class DDPGAgent():
         super(DDPGAgent,self).__init__()
         self.state_size = state_size
         self.action_size = action_size
-        self.eps = 0.997
         self.seed = random.seed(random_seed)
 
         # Actor Network (w/ Target Network)
@@ -78,7 +77,7 @@ class DDPGAgent():
         if add_noise:
             #action += self.noise.sample()
             #action =  self.actor_local(state) + noise*self.noise.noise()
-            action += self.noise.sample() * self.eps
+            action += self.noise.sample() #* self.eps
         
         #Fix np.Ndarray error -
         action = np.clip(action, -1, 1)
@@ -164,7 +163,7 @@ class OUNoise:
         x = self.state
         dx = self.theta * (self.mu - x) + self.sigma *  np.random.randn(len(x)) # np.array([random.random() for i in range(len(x))])
         self.state = x + dx
-        return self.state
+        return self.state  #torch.tensor(self.state).float()
 
 class ReplayBuffer:
     """Fixed-size buffer to store experience tuples."""
