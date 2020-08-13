@@ -8,14 +8,16 @@ class DDPGMultiAgent:
         self.gamma = 0.997
         self.multiagent = [DDPGAgent (state_size,action_size) for agent in range(num_agents)]
         
+    def __iter__(self):
+        return [ agent for agent in self.multiagent]
 
     def act(self, env_states):
         actions = [ agent.act(states) for agent,states in zip(self.multiagent,env_states)]
         return actions
 
      #Learn from Replay Memory
-    def learn(self, experiences,agent_number):
-        self.multiagent[agent_number].learn(experiences, self.gamma)
+    def learn(self, experiences,gamma):
+        [agent.learn(experiences,gamma) for agent in self.multiagent]
 
     def resetNoise(self):
         [agent.resetNoise() for agent in self.multiagent]
