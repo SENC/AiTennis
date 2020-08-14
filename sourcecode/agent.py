@@ -22,7 +22,7 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 class DDPGAgent():
     """Interacts with and learns from the environment."""
     
-    def __init__(self, state_size, action_size,random_seed=3):
+    def __init__(self, state_size, action_size,random_seed=1):
         """Initialize an Agent object.
         
         Params
@@ -49,19 +49,7 @@ class DDPGAgent():
         # Noise process
         self.noise = OUNoise(action_size, random_seed)
 
-        # Replay memory
-        self.memory = ReplayBuffer(action_size, BUFFER_SIZE, BATCH_SIZE, random_seed)
-    
-    def step(self, state, action, reward, next_state, done):
-        """Save experience in replay memory, and use random sample from buffer to learn."""
-        # Save experience / reward
-        self.memory.add(state, action, reward, next_state, done)
-
-        # Learn, if enough samples are available in memory
-        if len(self.memory) > BATCH_SIZE:
-            experiences = self.memory.sample()
-            self.learn(experiences, GAMMA)
-
+     
     def act(self, state, add_noise=True):
         """Returns actions for given state as per current policy."""
           
