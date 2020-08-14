@@ -9,12 +9,12 @@ import torch
 import torch.nn.functional as F
 import torch.optim as optim
 
-BUFFER_SIZE = 500000    #int(1e4)  # replay buffer size
-BATCH_SIZE = 256        #128        # minibatch size
+BUFFER_SIZE = 5000000    #int(1e4)  # replay buffer size
+BATCH_SIZE = 1024         #128        # minibatch size
 GAMMA = 0.996            # discount factor
 TAU = 0.001              # for soft update of target parameters
-LR_ACTOR = 0.0002         # learning rate of the actor 
-LR_CRITIC = 1e-3        # learning rate of the critic
+LR_ACTOR = 0.0001        # learning rate of the actor 1e-4 
+LR_CRITIC = 0.0003       # learning rate of the critic 3e-4 
 WEIGHT_DECAY = 0        # L2 weight decay
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -22,7 +22,7 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 class DDPGAgent():
     """Interacts with and learns from the environment."""
     
-    def __init__(self, state_size, action_size,random_seed=1):
+    def __init__(self, state_size, action_size,random_seed=3):
         """Initialize an Agent object.
         
         Params
@@ -75,10 +75,7 @@ class DDPGAgent():
             action = self.actor_local(state).cpu().data.numpy()
         self.actor_local.train()
         if add_noise:
-            #action += self.noise.sample()
-            #action =  self.actor_local(state) + noise*self.noise.noise()
-            action += self.noise.sample() #* self.eps
-        
+            action += self.noise.sample()         
         #Fix np.Ndarray error -
         action = np.clip(action, -1, 1)
         

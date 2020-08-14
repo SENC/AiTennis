@@ -17,6 +17,7 @@ class DDPGMultiAgent:
 
      #Learn from Replay Memory
     def learn(self, experiences,gamma):
+        #self.multiagent[agent_number].learn(experiences, self.gamma)
         [agent.learn(experiences,gamma) for agent in self.multiagent]
 
     def resetNoise(self):
