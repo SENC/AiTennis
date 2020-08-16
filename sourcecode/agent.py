@@ -22,7 +22,7 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 class DDPGAgent():
     """Interacts with and learns from the environment."""
     
-    def __init__(self, state_size, action_size,random_seed=1):
+    def __init__(self, state_size, action_size,random_seed=1,p_theta=0.17, p_sigma=0.24):
         """Initialize an Agent object.
         
         Params
@@ -47,13 +47,14 @@ class DDPGAgent():
         self.critic_optimizer = optim.Adam(self.critic_local.parameters(), lr=LR_CRITIC, weight_decay=WEIGHT_DECAY)
 
         # Noise process
-        self.noise = OUNoise(action_size, random_seed)
+        self.noise = OUNoise(action_size, random_seed,theta=p_theta,sigma=p_sigma)
 
      
     def act(self, state, add_noise=True):
         """Returns actions for given state as per current policy."""
           
         self.actor_local.eval()
+        self.explorefactor = 0.57
         #print("Agent - act {}".format(state))
         state = torch.from_numpy(state).float().to(device)
         
@@ -63,7 +64,7 @@ class DDPGAgent():
             action = self.actor_local(state).cpu().data.numpy()
         self.actor_local.train()
         if add_noise:
-            action += self.noise.sample()         
+            action += explorefactor*self.noise.sample()         
         #Fix np.Ndarray error -
         action = np.clip(action, -1, 1)
         

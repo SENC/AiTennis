@@ -22,10 +22,11 @@ WEIGHT_DECAY = 0        # L2 weight decay
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 'Multiagents for Colaboration'
 class DDPGMultiAgent:
-    def __init__(self, state_size,action_size,memory,num_agents,seed=1,p_gamma=0.987,p_tau=0.001,p_lrAct=0.0001,p_lrCritic=0.0002):
+    def __init__(self, state_size,action_size,memory,num_agents,seed=1,p_gamma=0.917,p_tau=0.001,p_lrAct=0.0001,p_lrCritic=0.0002,theta=0.17,sigma=0.24):
         super(DDPGMultiAgent,self).__init__()
       
-        self.multiagent = [DDPGAgent (state_size,action_size,random_seed=seed) for agent in range(num_agents)]
+        self.multiagent = [DDPGAgent (state_size,action_size,random_seed=seed,p_theta=theta, p_sigma=sigma) for agent in range(num_agents)]
+        print ("Gamma :{} , LR_Act :{} , LR_Critic {} , Theta {}, Sigma {}".format(p_gamma,p_lrAct,p_lrCritic,theta,sigma))
         self.commonMemory =memory   # Replay memory
 
         #Hyper Params
