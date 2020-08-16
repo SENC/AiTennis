@@ -12,17 +12,17 @@ from agent import OUNoise
 from nn_model import Actor, Critic
 
 BUFFER_SIZE = 5000000    #int(1e4)  # replay buffer size
-BATCH_SIZE = 1024         #128        # minibatch size
-GAMMA = 0.996            # discount factor
+BATCH_SIZE = 512         #128        # minibatch size
+GAMMA = 0.987            # discount factor
 TAU = 0.001              # for soft update of target parameters
 LR_ACTOR = 0.0001        # learning rate of the actor 1e-4 
-LR_CRITIC = 0.0003       # learning rate of the critic 3e-4 
+LR_CRITIC = 0.0002       # learning rate of the critic 3e-4 
 WEIGHT_DECAY = 0        # L2 weight decay
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 'Multiagents for Colaboration'
 class DDPGMultiAgent:
-    def __init__(self, state_size,action_size,memory,num_agents,seed=1,p_gamma=0.99,p_tau=0.001,p_lrAct=0.0001,p_lrCritic=0.0003):
+    def __init__(self, state_size,action_size,memory,num_agents,seed=1,p_gamma=0.987,p_tau=0.001,p_lrAct=0.0001,p_lrCritic=0.0002):
         super(DDPGMultiAgent,self).__init__()
       
         self.multiagent = [DDPGAgent (state_size,action_size,random_seed=seed) for agent in range(num_agents)]

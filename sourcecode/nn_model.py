@@ -31,7 +31,7 @@ class Actor(nn.Module):
         self.batch = nn.BatchNorm1d(fc1_units) 
         self.fc2 = nn.Linear(fc1_units, fc2_units)
         self.fc3 = nn.Linear(fc2_units, action_size)
-        self.dropout = nn.Dropout(p=0.05)
+        self.dropout = nn.Dropout(p=0.01)
         self.reset_parameters()
         
     """Re-set all input , hidden and output layers weights """
@@ -74,7 +74,7 @@ class Critic(nn.Module):
             preventing the co-adaptation of neurons as described in the paper
             `Improving neural networks by preventing co-adaptation of feature
             detectors`_ ."""
-        self.dropout = nn.Dropout(p=0.05)
+        self.dropout = nn.Dropout(p=0.01)
         self.fc3 = nn.Linear(fc2_units, 1)
         self.reset_parameters()
     
@@ -93,5 +93,5 @@ class Critic(nn.Module):
         x = F.relu(self.fc2(x))
         #his has proven to be an effective technique for regularization and 
         # preventing the co-adaptation of neurons
-        #x = self.dropout(x)
+        x = self.dropout(x)
         return self.fc3(x)
