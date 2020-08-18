@@ -13,8 +13,8 @@ BUFFER_SIZE = 5000000    #int(1e4)  # replay buffer size
 BATCH_SIZE = 1024         #128        # minibatch size
 GAMMA = 0.996            # discount factor
 TAU = 0.001              # for soft update of target parameters
-LR_ACTOR = 0.0001        # learning rate of the actor 1e-4 
-LR_CRITIC = 0.0003       # learning rate of the critic 3e-4 
+LR_ACTOR = 0.0002        # learning rate of the actor 1e-4 
+LR_CRITIC = 0.0001       # learning rate of the critic 3e-4 
 WEIGHT_DECAY = 0        # L2 weight decay
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -22,7 +22,7 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 class DDPGAgent():
     """Interacts with and learns from the environment."""
     
-    def __init__(self, state_size, action_size,random_seed=1,p_theta=0.17, p_sigma=0.24):
+    def __init__(self, state_size, action_size,random_seed=1,p_mu=0.,p_theta=0.17, p_sigma=0.24,p_targetcopy=False,p_explore=0.3):
         """Initialize an Agent object.
         
         Params
@@ -35,6 +35,8 @@ class DDPGAgent():
         self.state_size = state_size
         self.action_size = action_size
         self.seed = random.seed(random_seed)
+        self.explorfactor=p_explore
+        self.ishardcopy = p_targetcopy
 
         # Actor Network (w/ Target Network)
         self.actor_local = Actor(state_size, action_size, random_seed).to(device)
@@ -47,15 +49,20 @@ class DDPGAgent():
         self.critic_optimizer = optim.Adam(self.critic_local.parameters(), lr=LR_CRITIC, weight_decay=WEIGHT_DECAY)
 
         # Noise process
-        self.noise = OUNoise(action_size, random_seed,theta=p_theta,sigma=p_sigma)
+        self.noise = OUNoise(action_size, random_seed,mu=p_mu,theta=p_theta,sigma=p_sigma)
+
+        #Trained mode = true , copy local NN weights to target NN 
+        if(self.ishardcopy):
+            self.hard_update(self.actor_local,self.actor_target)
+            self.hard_update(self.critic_local,self.critic_target)
 
      
     def act(self, state, add_noise=True):
         """Returns actions for given state as per current policy."""
           
         self.actor_local.eval()
-        self.explorefactor = 0.57
-        #print("Agent - act {}".format(state))
+        self.explorefactor = explr
+        #print("NOTE - You are in Agent.py - act {}".format(state))
         state = torch.from_numpy(state).float().to(device)
         
         #state = torch.as_tensor(np.array(state).astype('float')).to(device)
@@ -64,7 +71,7 @@ class DDPGAgent():
             action = self.actor_local(state).cpu().data.numpy()
         self.actor_local.train()
         if add_noise:
-            action += explorefactor*self.noise.sample()         
+            action += self.explorfactor*self.noise.sample()         
         #Fix np.Ndarray error -
         action = np.clip(action, -1, 1)
         
@@ -100,6 +107,7 @@ class DDPGAgent():
         # Minimize the loss
         self.critic_optimizer.zero_grad()
         critic_loss.backward()
+        #torch.nn.utils.clip_grad_norm_(self.critic_local.parameters(), 1)
         self.critic_optimizer.step()
 
         # ---------------------------- update actor ---------------------------- #
@@ -128,6 +136,10 @@ class DDPGAgent():
         for target_param, local_param in zip(target_model.parameters(), local_model.parameters()):
             target_param.data.copy_(tau*local_param.data + (1.0-tau)*target_param.data)
     
+    "When loading trained weights - copy ttarget netwrok also the same"
+    def hard_update(self,local_model,target_model):
+        for target_param,local_param in zip(target_model.parameters(),local_model.parameters()):
+            target_param.data.copy_(local_param.data)
                 
 class OUNoise:
     """Ornstein-Uhlenbeck process."""

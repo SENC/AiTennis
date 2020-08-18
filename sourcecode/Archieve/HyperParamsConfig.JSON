@@ -1,0 +1,19 @@
+
+{
+    "SEED" : 1,
+    "BUFFER_SIZE": 5000000, 
+    "BATCH_SIZE": 258,
+    "TAU": 0.0013,
+    "LR_CRITIC": 0.0001,
+    "LR_ACTOR": 0.00017,
+    "GAMMA": 0.789,
+    "THETA": 0.1,
+    "SIGMA" : 0.2,
+    
+    "noise": {
+        "sigma": 0.24,
+        "mu": 0.0,
+        "theta": 0.15
+    }    
+       
+}

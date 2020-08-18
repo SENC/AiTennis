@@ -3,10 +3,13 @@ import torch
 import numpy as np
 
 class DDPGMultiAgent:
-    def __init__(self, state_size,action_size,num_agents):
+    def __init__(self, state_size,action_size,memory,p_gamma,num_agents):
         super(DDPGMultiAgent,self).__init__()
-        self.gamma = 0.997
+      
         self.multiagent = [DDPGAgent (state_size,action_size) for agent in range(num_agents)]
+        self.gamma = p_gamma
+        self.commonMemory =memory   # Replay memory
+        
         
     def __iter__(self):
         return [ agent for agent in self.multiagent]
@@ -16,9 +19,10 @@ class DDPGMultiAgent:
         return actions
 
      #Learn from Replay Memory
-    def learn(self, experiences,gamma):
+    def learn(self):
         #self.multiagent[agent_number].learn(experiences, self.gamma)
-        [agent.learn(experiences,gamma) for agent in self.multiagent]
+        #print("Check #2:Learning triggered thr DDPG Agent\n")
+        [agent.learn(self.commonMemory.sample(),self.gamma) for agent in self.multiagent]
 
     def resetNoise(self):
         [agent.resetNoise() for agent in self.multiagent]
