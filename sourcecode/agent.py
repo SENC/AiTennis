@@ -22,7 +22,7 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 class DDPGAgent():
     """Interacts with and learns from the environment."""
     
-    def __init__(self, state_size, action_size,random_seed=1,p_mu=0.,p_theta=0.17, p_sigma=0.24,p_targetcopy=False,p_explore=0.3):
+    def __init__(self, state_size, action_size,nn_actor_local,nn_actor_target,nn_actor_opt,nn_critic_local,nn_critic_target,nn_critic_opt ,lr_actor=0.0001,lr_critic=0.0001,random_seed=1,p_mu=0.,p_theta=0.17, p_sigma=0.24,p_targetcopy=False,p_explore=0.3):
         """Initialize an Agent object.
         
         Params
@@ -38,15 +38,14 @@ class DDPGAgent():
         self.explorfactor=p_explore
         self.ishardcopy = p_targetcopy
 
-        # Actor Network (w/ Target Network)
-        self.actor_local = Actor(state_size, action_size, random_seed).to(device)
-        self.actor_target = Actor(state_size, action_size, random_seed).to(device)
-        self.actor_optimizer = optim.Adam(self.actor_local.parameters(), lr=LR_ACTOR)
+        self.actor_local = nn_actor_local
+        self.actor_target =nn_actor_target
+        self.actor_optimizer = nn_actor_opt
 
         # Critic Network (w/ Target Network)
-        self.critic_local = Critic(state_size, action_size, random_seed).to(device)
-        self.critic_target = Critic(state_size, action_size, random_seed).to(device)
-        self.critic_optimizer = optim.Adam(self.critic_local.parameters(), lr=LR_CRITIC, weight_decay=WEIGHT_DECAY)
+        self.critic_local = nn_critic_local#Critic(state_size, action_size, random_seed).to(device)
+        self.critic_target = nn_critic_target#Critic(state_size, action_size, random_seed).to(device)
+        self.critic_optimizer = nn_critic_opt # optim.Adam(self.critic_local.parameters(), lr=lr_critic, weight_decay=WEIGHT_DECAY)
 
         # Noise process
         self.noise = OUNoise(action_size, random_seed,mu=p_mu,theta=p_theta,sigma=p_sigma)
@@ -56,32 +55,28 @@ class DDPGAgent():
             self.hard_update(self.actor_local,self.actor_target)
             self.hard_update(self.critic_local,self.critic_target)
 
-     
-    def act(self, state, add_noise=True):
+    'Agent Act -Policy based actions '
+    def act(self, states, add_noise=True):
         """Returns actions for given state as per current policy."""
           
-        self.actor_local.eval()
-        self.explorefactor = explr
-        #print("NOTE - You are in Agent.py - act {}".format(state))
-        state = torch.from_numpy(state).float().to(device)
-        
-        #state = torch.as_tensor(np.array(state).astype('float')).to(device)
-        self.actor_local.eval()
-        with torch.no_grad():
-            action = self.actor_local(state).cpu().data.numpy()
-        self.actor_local.train()
+        states = torch.from_numpy(states).float().to(device)
+        actions = self.actor_local(states).cpu().data.numpy() 
         if add_noise:
-            action += self.explorfactor*self.noise.sample()         
-        #Fix np.Ndarray error -
-        action = np.clip(action, -1, 1)
+            actions += self.explorfactor*self.noise.sample()         
+        actions = np.clip(actions, -1, 1)
         
-        return action 
+        return actions
 
+    def target_act(self, states, noise=0.0):
+        states = torch.from_numpy(states).float().to(device)
+        actions = self.actor_target(states) + self.explorfactor*self.noise.sample()
+        return actions
 
     def reset(self):
         self.noise.reset()
 
-    def learn(self, experiences, gamma):
+    "DEEP Q Learning "
+    def learn(self, experiences, gamma,tau):
         """Update policy and value parameters using given batch of experience tuples.
         Q_targets = r + γ * critic_target(next_state, actor_target(next_state))
         where:
@@ -97,7 +92,8 @@ class DDPGAgent():
 
         # ---------------------------- update critic ---------------------------- #
         # Get predicted next-state actions and Q values from target models
-        actions_next = self.actor_target(next_states)
+        actions_next = self.target_act(next_states)
+        ##actions_next = self.actor_target(next_states)
         Q_targets_next = self.critic_target(next_states, actions_next)
         # Compute Q targets for current states (y_i)
         Q_targets = rewards + (gamma * Q_targets_next * (1 - dones))
@@ -107,7 +103,7 @@ class DDPGAgent():
         # Minimize the loss
         self.critic_optimizer.zero_grad()
         critic_loss.backward()
-        #torch.nn.utils.clip_grad_norm_(self.critic_local.parameters(), 1)
+        torch.nn.utils.clip_grad_norm_(self.critic_local.parameters(), 1)
         self.critic_optimizer.step()
 
         # ---------------------------- update actor ---------------------------- #
@@ -120,8 +116,8 @@ class DDPGAgent():
         self.actor_optimizer.step()
 
         # ----------------------- update target networks ----------------------- #
-        self.soft_update(self.critic_local, self.critic_target, TAU)
-        self.soft_update(self.actor_local, self.actor_target, TAU)                     
+        self.soft_update(self.critic_local, self.critic_target, tau)
+        self.soft_update(self.actor_local, self.actor_target, tau)                     
 
     def soft_update(self, local_model, target_model, tau):
         """Soft update model parameters.
@@ -140,6 +136,15 @@ class DDPGAgent():
     def hard_update(self,local_model,target_model):
         for target_param,local_param in zip(target_model.parameters(),local_model.parameters()):
             target_param.data.copy_(local_param.data)
+
+     #https://github.com/ikostrikov/pytorch-ddpg-naf/blob/master/ddpg.py#L199
+    def load_trained_model(self, actor_path, critic_path):
+        print('Loading trained models from {} and {}'.format(actor_path, critic_path))
+        if actor_path is not None:
+            self.actor_local.load_state_dict(torch.load(actor_path))
+        if critic_path is not None: 
+            self.critic_local.load_state_dict(torch.load(critic_path))
+        print ('\r DONE')
                 
 class OUNoise:
     """Ornstein-Uhlenbeck process."""
@@ -161,7 +166,7 @@ class OUNoise:
         x = self.state
         dx = self.theta * (self.mu - x) + self.sigma *  np.random.randn(len(x)) # np.array([random.random() for i in range(len(x))])
         self.state = x + dx
-        return self.state  #torch.tensor(self.state).float()
+        return self.state  
 
 class ReplayBuffer:
     """Fixed-size buffer to store experience tuples."""
