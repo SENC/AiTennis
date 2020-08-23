@@ -18,7 +18,7 @@ In this environment, two agents control rackets to bounce a ball over a net. If 
 
 The Environment preview
 
-<img src=images/tennis.png width="684">
+<img src=images/25KEpisodespoint2.gif width="684">
 
 In this environment, two agents control rackets to bounce a ball over a net. If an agent hits the ball over the net, it receives a reward of +0.1. If an agent lets a ball hit the ground or hits the ball out of bounds, it receives a reward of -0.01. Thus, the goal of each agent is to keep the ball in play.
 
