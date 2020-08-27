@@ -1,21 +1,18 @@
 
 {
-    "SEEDC": 6,
+    "SEEDC": 2,
     "SEED" : 1,
-    "BUFFER_SIZE": 5000000, 
+    "BUFFER_SIZE": 1000000, 
     "BATCH_SIZE": 512,
+    "GAMMA": 0.99917,
     "TAU": 0.0013,
-    "LR_CRITIC": 0.0000001,
-    "LR_ACTOR": 0.00000013,
-    "GAMMA": 0.997,
+    "LR_CRITIC": 0.0001,
+    "LR_ACTOR": 0.0001,
+    "MU":0,
     "THETA": 0.17,
-    "SIGMA" : 0.79,
-    "EXPLORE" :0.9,
+    "SIGMA" : 1.0,
+    "EXPLORE" :0.59953
     
-    "noise": {
-        "sigma": 0.24,
-        "mu": 0.0,
-        "theta": 0.15
-    }    
+     
        
 }
