@@ -27,6 +27,7 @@ class Actor(nn.Module):
         super(Actor, self).__init__()
         self.seed = torch.manual_seed(seed)
         self.fc1 = nn.Linear(state_size, fc1_units)
+        #self.batch = nn.BatchNorm1d(fc1_units)
         self.fc2 = nn.Linear(fc1_units, fc2_units)
         self.fc3 = nn.Linear(fc2_units, action_size)
         self.reset_parameters()
@@ -72,7 +73,7 @@ class Critic(nn.Module):
             preventing the co-adaptation of neurons as described in the paper
             `Improving neural networks by preventing co-adaptation of feature
             detectors`_ ."""
-        self.dropout = nn.Dropout(p=0.01)
+        self.dropout = nn.Dropout(p=0.03)
         self.fc3 = nn.Linear(fc2_units, 1)
         self.reset_parameters()
     

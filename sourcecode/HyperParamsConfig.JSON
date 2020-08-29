@@ -3,15 +3,15 @@
     "SEEDC": 2,
     "SEED" : 1,
     "BUFFER_SIZE": 1000000, 
-    "BATCH_SIZE": 512,
-    "GAMMA": 0.99917,
-    "TAU": 0.0013,
-    "LR_CRITIC": 0.0001,
-    "LR_ACTOR": 0.0001,
+    "BATCH_SIZE": 256,
+    "GAMMA": 0.99896,
+    "TAU": 0.00013,
+    "LR_CRITIC": 0.0000002,
+    "LR_ACTOR": 0.000000075,
     "MU":0,
-    "THETA": 0.17,
-    "SIGMA" : 1.0,
-    "EXPLORE" :0.59953
+    "THETA": 0.19,
+    "SIGMA" : 0.279,
+    "EXPLORE" :0.00327
     
      
        
