@@ -43,6 +43,8 @@ Develop an colloaborative AI Agents using 'actor-critic' methods - which should 
 5. DDPGMultiAgentTennis.py: Place holder for individual DDPG agents and common Replay Memory and Actor networks for both Agents
 6. HyperparamsConfig.json: Configuration for Hyperparameters and SEED
 7. Tennis.exe : Unity Environment for Windows- 64bit
+8. ./NNWeights/:Saved weights of Actor-Critic NN Model
+9. History.pdf: All Trial and Errors and Hyperparams tunings -Windows vs Udacity Workspace
 
 
 
