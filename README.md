@@ -17,6 +17,7 @@ In this environment, two agents control rackets to bounce a ball over a net. If 
 #HL Logic : Have common Actor-Critic Network and Replay Memory for collaboration between 2 AI agents to self-play  in the given Tennis Envionment using DDPG algorithm
 
 The trained agents self-play after 25k episodes :
+[Learning function called in end of each episode-Not on every step]
 <img src=images/25KEpisodespoint2.gif width="684" >
 
 In this environment, two agents control rackets to bounce a ball over a net. If an agent hits the ball over the net, it receives a reward of +0.1. If an agent lets a ball hit the ground or hits the ball out of bounds, it receives a reward of -0.01. Thus, the goal of each agent is to keep the ball in play.
@@ -42,6 +43,8 @@ Develop an colloaborative AI Agents using 'actor-critic' methods - which should 
 5. DDPGMultiAgentTennis.py: Place holder for individual DDPG agents and common Replay Memory and Actor networks for both Agents
 6. HyperparamsConfig.json: Configuration for Hyperparameters and SEED
 7. Tennis.exe : Unity Environment for Windows- 64bit
+8. ./NNWeights/:Saved weights of Actor-Critic NN Model
+9. History.pdf: All Trial and Errors and Hyperparams tunings -Windows vs Udacity Workspace
 
 
 
