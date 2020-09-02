@@ -49,7 +49,7 @@ class DDPGAgent():
         self.tau=config["TAU"]
         
         self.explorfactor=config["EXPLORE"]
-        self.ishardcopy = False        
+        self.ishardcopy = True        
         #Actot Network - Common for Multiple agent
         self.actor_local = nn_actor_local
         self.actor_target =nn_actor_target
