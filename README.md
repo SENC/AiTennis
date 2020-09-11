@@ -16,7 +16,11 @@ In this environment, two agents control rackets to bounce a ball over a net. If 
 
 #HL Logic : Have common Actor-Critic Network and Replay Memory for collaboration between 2 AI agents to self-play  in the given Tennis Envionment using DDPG algorithm
 
-The trained agents self-play after 25k episodes :
+Trained Agents play:
+
+<img src=images/TrainedMultiAgentsPlay.gif width="684" >
+
+while training around 25k episodes :
 [Learning function called in end of each episode-Not on every step]
 <img src=images/25KEpisodespoint2.gif width="684" >
 
@@ -36,16 +40,18 @@ Develop an colloaborative AI Agents using 'actor-critic' methods - which should 
 
 # Files :
 
-1. Report.pdf: Gives complete project implementation report with results
+1. Final Report - Multi-Agent-DDPG-Tennis - DRL NanoDegree.pdf: Gives complete project implementation report with  rewards plots with results
 2. Tennis.ipynb : Python Notebook "DDPG -Multi Agent Implementation given Unityenviornment -windows env"
 3. agent.py : Agent class and utilities like  like Replay Memory and OUNoise (exploration)
 4. nn_model.py : Actor and Critic Neural Network Architecture (Feed forward
 5. DDPGMultiAgentTennis.py: Place holder for individual DDPG agents and common Replay Memory and Actor networks for both Agents
 6. HyperparamsConfig.json: Configuration for Hyperparameters and SEED
 7. Tennis.exe : Unity Environment for Windows- 64bit
-8. ./NNWeights/:Saved weights of Actor-Critic NN Model
+8. NN_WEIGHTS_EnvSolved: Saved Actor-Critic NN weights. (prev history saved models placed in ./NNWeights/)
 9. History.pdf: All Trial and Errors and Hyperparams tunings -Windows vs Udacity Workspace
+10.Presentation_TennisAgentsPlay.pptx: Screen recording -Vidoe file of the TrainedAgents play 
 
+# Environment Solved at 155th Episodes- MaxReward 2.6
 
 
 # Environment Setup:
