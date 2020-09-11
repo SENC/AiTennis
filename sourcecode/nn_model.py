@@ -72,7 +72,7 @@ class Critic(nn.Module):
             preventing the co-adaptation of neurons as described in the paper
             `Improving neural networks by preventing co-adaptation of feature
             detectors`_ ."""
-        self.dropout = nn.Dropout(p=0.03)
+        self.dropout = nn.Dropout(p=0.35)
         self.fc3 = nn.Linear(fc2_units, 1)
         self.reset_parameters()
     

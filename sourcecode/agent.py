@@ -130,10 +130,8 @@ class DDPGAgent():
         # ---------------------------- update critic ---------------------------- #
         # Get predicted next-state actions and Q values from target models
         #print("Next states",next_states)
-        #actions_next_per_agent = [self.actor_target(next_state) for next_state in next_states]
         actions_next_local = [self.actor_target(next_state) for next_state in next_states]
         actions_next_tensor = torch.cat(actions_next_local,dim=1).to(device)
-        #actions_next =self.actor_target(actions_next_local)
         #print(actions_next)
         
         # Compute Q targets for current states (y_i)
